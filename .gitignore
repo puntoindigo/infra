@@ -1,0 +1,39 @@
+# Proyectos individuales (cada uno tiene su propio repo)
+dev/
+devbot-orchestrator/
+devbots/
+devbots-product/
+ia/
+id/
+launcher/
+mvp/
+postulador/
+recibos/
+remitero/
+sincronizar/
+v0-audio-generation-interface/
+vorum-tmp/
+vorum-wa/
+plans/
+docs/
+speech_proveeduria.md
+
+# Archivos temporales
+*.log
+*.tmp
+WindowsTempchg_out.txt
+ANALISIS_COMMIT_*.md
+count.py
+puntoindigo_tasks.py
+.cursor/
+
+# Nunca subir secretos
+.env
+.env.*
+!.env.example
+
+# Herramientas locales
+.aider*
+.claude/
+.vscode/
+sincronizar
