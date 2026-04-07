@@ -145,12 +145,63 @@ Para PM2 local el cart usa `EventEmitter` en memoria (un solo proceso). Para Ver
 
 ## Proyectos
 
-| Proyecto | URL | Repo |
-|---|---|---|
-| remitero | preview.remitero.puntoindigo.com | [puntoindigo/remitero](https://github.com/puntoindigo/remitero) |
-| id | id.puntoindigo.com | [puntoindigo/id](https://github.com/puntoindigo/id) |
-| ia | ia.puntoindigo.com | [puntoindigo/ai](https://github.com/puntoindigo/ai) |
-| devbot | localhost:3333 | [puntoindigo/devbot-orchestrator](https://github.com/puntoindigo/devbot-orchestrator) |
-| vorum | vorum.puntoindigo.com | — |
-| recibos | v0-recibos.vercel.app | [puntoindigo/recibos-gremio](https://github.com/puntoindigo/recibos-gremio) |
-| launchpad | launchpad-daeiman0.vercel.app | — |
+### Ecosistema gremial
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| remitero | Remitos, ventas y crédito gremial (proveeduría) | [preview.remitero.puntoindigo.com](https://preview.remitero.puntoindigo.com) | [puntoindigo/remitero](https://github.com/puntoindigo/remitero) |
+| id | Identidad facial, DNI y kiosco de verificación | [id.puntoindigo.com](https://id.puntoindigo.com) | [puntoindigo/id](https://github.com/puntoindigo/id) |
+| recibos-gremio | Recibos de sueldo con descuentos a crédito | [v0-recibos.vercel.app](https://v0-recibos.vercel.app) | [puntoindigo/recibos-gremio](https://github.com/puntoindigo/recibos-gremio) |
+| gremio-hub | Hub del ecosistema gremial | [gremio-hub.vercel.app](https://gremio-hub.vercel.app) | [puntoindigo/gremio-hub](https://github.com/puntoindigo/gremio-hub) |
+
+### IA y automatización
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| ai (ia) | Motor IA gateway — API unificada, planes, checkout SSE | [ia.puntoindigo.com](https://ia.puntoindigo.com) | [puntoindigo/ai](https://github.com/puntoindigo/ai) |
+| devbot-orchestrator | Orquestador de Claude Code bots, panel admin | localhost:3333 / [devbots.puntoindigo.com](https://devbots.puntoindigo.com) | [puntoindigo/devbot-orchestrator](https://github.com/puntoindigo/devbot-orchestrator) |
+| devbots | Landing/producto devbots | [devbots.puntoindigo.com](https://devbots.puntoindigo.com) | [puntoindigo/devbots](https://github.com/puntoindigo/devbots) |
+| mensajero | Notificaciones WhatsApp unificadas | localhost:3005 (PM2) | — |
+| vorum-wa | Bot WhatsApp que conecta números al CRM | PM2 local + Tailscale | [puntoindigo/vorum-wa](https://github.com/puntoindigo/vorum-wa) |
+
+### CRM y comunicación
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| vorum | CRM WhatsApp para abogados, contadores y consultores | [vorum.puntoindigo.com](https://vorum.puntoindigo.com) | [puntoindigo/vorum](https://github.com/puntoindigo/vorum) |
+
+### Identidad y pagos
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| accounts | Cuentas y autenticación del ecosistema | [accounts-daeiman0.vercel.app](https://accounts-daeiman0.vercel.app) | [puntoindigo/accounts](https://github.com/puntoindigo/accounts) |
+| plata | Pasarela de pagos y suscripciones | [plata-opal.vercel.app](https://plata-opal.vercel.app) | [puntoindigo/plata](https://github.com/puntoindigo/plata) |
+
+### Apps y herramientas
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| auris (v0-audio) | Sonidos binaurales — concentración, relajación, sueño | [auris.puntoindigo.com](https://auris.puntoindigo.com) | [puntoindigo/v0-audio-generation-interface](https://github.com/puntoindigo/v0-audio-generation-interface) |
+| postulador | CVs ATS, flyers y perfiles profesionales | — | [puntoindigo/postulador](https://github.com/puntoindigo/postulador) |
+| mvp | Sistema de autorización de operaciones (POS) | [app.puntoindigo.com](https://app.puntoindigo.com) | [puntoindigo/mvp](https://github.com/puntoindigo/mvp) |
+| tableros | Dashboards de gestión del ecosistema | — | [puntoindigo/tableros](https://github.com/puntoindigo/tableros) |
+| Cruxis | — | — | [puntoindigo/Cruxis](https://github.com/puntoindigo/Cruxis) |
+| oliveros | — | [oliveros.vercel.app](https://oliveros.vercel.app) | [puntoindigo/oliveros](https://github.com/puntoindigo/oliveros) |
+
+### Infraestructura local (PM2)
+
+| Proyecto | Descripción | Puerto | Repo |
+|---|---|---|---|
+| launcher | Hub local — panel de acceso rápido a servicios | 80 | — |
+| mensajero | Notificaciones WA unificadas | 3005 | — |
+| ia | Motor IA (ver arriba) | 3001 | [puntoindigo/ai](https://github.com/puntoindigo/ai) |
+| devbot | Orquestador bots (ver arriba) | 3333 | [puntoindigo/devbot-orchestrator](https://github.com/puntoindigo/devbot-orchestrator) |
+| remitero | Remitos (ver arriba) | 8000 | [puntoindigo/remitero](https://github.com/puntoindigo/remitero) |
+| vorum-wa | Bot WA (ver arriba) | — | [puntoindigo/vorum-wa](https://github.com/puntoindigo/vorum-wa) |
+
+### Presencia y marketing
+
+| Proyecto | Descripción | URL | Repo |
+|---|---|---|---|
+| dev | Landing institucional Punto Indigo | [dev.puntoindigo.com](https://dev.puntoindigo.com) | [puntoindigo/dev](https://github.com/puntoindigo/dev) |
+| launchpad | Hub de proyectos + 10 ideas | [launchpad-daeiman0.vercel.app](https://launchpad-daeiman0.vercel.app) | [puntoindigo/launchpad](https://github.com/puntoindigo/launchpad) |
