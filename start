@@ -1,0 +1,259 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════
+#  Punto Indigo — CLI de servicios
+#  Uso: ./start [servicio] [comando] [args]
+# ═══════════════════════════════════════════════════════════
+
+set -euo pipefail
+PROJECTS="$(cd "$(dirname "$0")" && pwd)"
+
+# ── Colores ─────────────────────────────────────────────────
+G='\033[0;32m'; Y='\033[1;33m'; B='\033[0;34m'; R='\033[0;31m'; NC='\033[0m'
+ok()   { echo -e "${G}✓${NC} $*"; }
+info() { echo -e "${B}→${NC} $*"; }
+warn() { echo -e "${Y}⚠${NC} $*"; }
+err()  { echo -e "${R}✗${NC} $*" >&2; exit 1; }
+
+# ── Leer variable de un .env.local / .env ───────────────────
+env_get() {
+  local dir="$1" key="$2"
+  for f in "$dir/.env.local" "$dir/.env"; do
+    [[ -f "$f" ]] || continue
+    local val
+    val=$(grep -E "^${key}=" "$f" 2>/dev/null | head -1 | cut -d= -f2- | tr -d $'"\r')
+    [[ -n "$val" ]] && { echo "$val"; return; }
+  done
+}
+
+# ── Abrir URL en el browser ──────────────────────────────────
+# $1 = URL, $2 = "kiosk" para modo pantalla completa sin chrome UI
+open_url() {
+  local url="$1" mode="${2:-}"
+  if [[ "$mode" == "kiosk" ]]; then
+    local chrome="/c/Program Files/Google/Chrome/Application/chrome.exe"
+    local edge="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+    if [[ -f "$chrome" ]]; then
+      "$chrome" --kiosk --noerrdialogs --disable-infobars \
+        --disable-session-crashed-bubble --disable-features=TranslateUI \
+        "$url" &
+    elif [[ -f "$edge" ]]; then
+      "$edge" --kiosk "$url" --edge-kiosk-type=fullscreen &
+    else
+      warn "Chrome/Edge no encontrado — abriendo en browser por defecto"
+      cmd.exe /c start "" "$url"
+    fi
+  else
+    cmd.exe /c start "" "$url" 2>/dev/null || xdg-open "$url" 2>/dev/null || true
+  fi
+}
+
+# ════════════════════════════════════════════════════════════
+SERVICE="${1:-}"
+CMD="${2:-}"
+ARGS=("${@:3}")
+
+case "$SERVICE" in
+
+# ── remitero ────────────────────────────────────────────────
+remitero)
+  PORT=8000
+  BASE="http://localhost:$PORT"
+  DIR="$PROJECTS/remitero"
+
+  COMPANY_ID=$(env_get "$DIR" "PROVEEDURIA_COMPANY_ID")
+  COMPANY_ID="${COMPANY_ID:-01646687-9c07-463c-b71c-af96de397138}"
+
+  case "$CMD" in
+    kiosco|kiosko)
+      URL="$BASE/kiosk/display?companyId=$COMPANY_ID"
+      info "Pantalla kiosco (tablet cliente) → $URL"
+      open_url "$URL" kiosk
+      ok "Listo — Chrome kiosk abierto"
+      ;;
+    cajero)
+      info "UI cajero → $BASE"
+      open_url "$BASE"
+      ;;
+    build)
+      info "Build remitero..."
+      cd "$DIR" && npm run build
+      ok "Build completado"
+      ;;
+    deploy)
+      info "Deploy remitero → Vercel (develop)..."
+      cd "$DIR" && npm run deploy:prod
+      ;;
+    start|up)
+      info "Iniciando remitero en PM2 (puerto $PORT)..."
+      pm2 start "$PROJECTS/ecosystem.config.js" --only remitero
+      ok "remitero corriendo en :$PORT"
+      ;;
+    stop)
+      pm2 stop remitero
+      ;;
+    restart|reload)
+      pm2 restart remitero
+      ;;
+    logs)
+      pm2 logs remitero --lines 50
+      ;;
+    *)
+      echo -e "\n  ${Y}remitero${NC} comandos:"
+      echo "    kiosco    Pantalla tablet cliente (Chrome kiosk, puerto $PORT)"
+      echo "    cajero    UI cajero en browser"
+      echo "    start     Levantar en PM2"
+      echo "    stop      Detener en PM2"
+      echo "    restart   Reiniciar en PM2"
+      echo "    build     npm run build"
+      echo "    deploy    Deploy a Vercel"
+      echo "    logs      Logs PM2"
+      echo ""
+      ;;
+  esac
+  ;;
+
+# ── id ──────────────────────────────────────────────────────
+id)
+  DIR="$PROJECTS/id"
+  ID_URL=$(env_get "$DIR" "NEXTAUTH_URL")
+  ID_URL="${ID_URL:-https://id.puntoindigo.com}"
+  # Leer stationId: argumento > .env > default histórico
+  STATION_ID="${ARGS[0]:-}"
+  if [[ -z "$STATION_ID" ]]; then
+    STATION_ID=$(env_get "$PROJECTS/remitero" "ID_KIOSK_STATION_ID")
+  fi
+  STATION_ID="${STATION_ID:-16efd110-bcc4-4446-92a3-d0de967630b4}"
+
+  case "$CMD" in
+    terminal|kiosco|kiosko)
+      URL="$ID_URL/kiosko/join/$STATION_ID"
+      info "Terminal reconocimiento facial → $URL"
+      open_url "$URL" kiosk
+      ok "Listo — Chrome kiosk abierto"
+      ;;
+    panel|dashboard)
+      info "Panel admin id → $ID_URL/dashboard"
+      open_url "$ID_URL/dashboard"
+      ;;
+    seed)
+      info "Recreando kiosko-1 en DB..."
+      cd "$DIR" && node scripts/seed-kiosko-station.mjs
+      ;;
+    *)
+      echo -e "\n  ${Y}id${NC} comandos:"
+      echo "    terminal [stationId]   Terminal facial (Chrome kiosk)"
+      echo "    panel                  Dashboard admin"
+      echo "    seed                   Recrear kiosko-1 en DB"
+      echo ""
+      ;;
+  esac
+  ;;
+
+# ── ia ──────────────────────────────────────────────────────
+ia)
+  PORT=3001
+  DIR="$PROJECTS/ia"
+  BASE="http://localhost:$PORT"
+  case "$CMD" in
+    start|up)
+      info "Iniciando ia en PM2 (puerto $PORT)..."
+      pm2 start "$PROJECTS/ecosystem.config.js" --only ia
+      ;;
+    build)
+      info "Build ia..."
+      cd "$DIR" && npm run build
+      ok "Build completado"
+      ;;
+    logs)  pm2 logs ia --lines 50 ;;
+    stop)  pm2 stop ia ;;
+    restart|reload) pm2 restart ia ;;
+    open)  open_url "$BASE" ;;
+    *)
+      echo -e "\n  ${Y}ia${NC} comandos: start | stop | restart | build | logs | open"
+      echo ""
+      ;;
+  esac
+  ;;
+
+# ── devbot ──────────────────────────────────────────────────
+devbot)
+  PORT=3333
+  case "$CMD" in
+    start|up)    pm2 start "$PROJECTS/ecosystem.config.js" --only devbot ;;
+    stop)        pm2 stop devbot ;;
+    restart)     pm2 restart devbot ;;
+    logs)        pm2 logs devbot --lines 50 ;;
+    admin)       open_url "http://localhost:$PORT/admin" ;;
+    *)
+      echo -e "\n  ${Y}devbot${NC} comandos: start | stop | restart | logs | admin"
+      echo ""
+      ;;
+  esac
+  ;;
+
+# ── PM2 shortcuts ────────────────────────────────────────────
+pm2)
+  case "$CMD" in
+    status|"") pm2 status ;;
+    reload)    pm2 reload "$PROJECTS/ecosystem.config.js" ;;
+    save)      pm2 save ;;
+    logs)      pm2 logs "${ARGS[0]:-}" ;;
+    resurrect) pm2 resurrect ;;
+    *) pm2 "$CMD" "${ARGS[@]:-}" ;;
+  esac
+  ;;
+
+# ── Atajos globales ──────────────────────────────────────────
+all|up)
+  info "Levantando todos los servicios..."
+  pm2 reload "$PROJECTS/ecosystem.config.js"
+  ok "Todos los servicios activos"
+  pm2 status
+  ;;
+
+status)
+  pm2 status
+  ;;
+
+# ── Help ─────────────────────────────────────────────────────
+help|"")
+  echo ""
+  echo -e "  ${B}Punto Indigo — CLI de servicios${NC}"
+  echo ""
+  echo "  Uso: ./start [servicio] [comando] [args]"
+  echo ""
+  echo -e "  ${Y}remitero${NC}"
+  echo "    ./start remitero kiosco       Pantalla kiosco tablet (Chrome kiosk)"
+  echo "    ./start remitero cajero       UI cajero en browser"
+  echo "    ./start remitero start        Levantar en PM2 (:8000)"
+  echo "    ./start remitero build        npm run build"
+  echo "    ./start remitero deploy       Deploy Vercel"
+  echo "    ./start remitero logs         Logs PM2"
+  echo ""
+  echo -e "  ${Y}id${NC}"
+  echo "    ./start id terminal           Terminal facial (Chrome kiosk)"
+  echo "    ./start id terminal [id]      Terminal con stationId específico"
+  echo "    ./start id panel              Dashboard admin"
+  echo "    ./start id seed               Recrear kiosko-1 en DB"
+  echo ""
+  echo -e "  ${Y}ia${NC}"
+  echo "    ./start ia start|build|logs"
+  echo ""
+  echo -e "  ${Y}devbot${NC}"
+  echo "    ./start devbot start|admin|logs"
+  echo ""
+  echo -e "  ${Y}pm2${NC}"
+  echo "    ./start pm2 reload            Recargar ecosystem.config.js"
+  echo "    ./start pm2 save              Guardar lista de procesos"
+  echo "    ./start pm2 logs [nombre]     Logs de un servicio"
+  echo ""
+  echo -e "  ${Y}General${NC}"
+  echo "    ./start all                   Levantar todo"
+  echo "    ./start status                Estado PM2"
+  echo ""
+  ;;
+
+*)
+  err "Servicio desconocido: '$SERVICE'. Usá ./start help"
+  ;;
+esac
