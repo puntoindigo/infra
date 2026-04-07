@@ -375,6 +375,13 @@ const LOCAL = [
     ping: 'http://localhost:3001',
     badge: 'local',
     ext: 'ia.puntoindigo.com',
+    links: [
+      { label: 'health', url: 'http://localhost:3001/health' },
+      { label: 'providers', url: 'http://localhost:3001/api/v1/admin/providers' },
+      { label: 'routing', url: 'http://localhost:3001/api/v1/admin/routing' },
+      { label: 'metrics', url: 'http://localhost:3001/api/v1/metrics/usage' },
+      { label: 'logs', url: 'http://localhost:3001/api/v1/logs/stream' },
+    ],
   },
   {
     name: 'Devbot Orchestrator',
@@ -384,6 +391,13 @@ const LOCAL = [
     ping: 'http://localhost:3333',
     badge: 'local',
     ext: 'devbots.puntoindigo.com',
+    links: [
+      { label: 'bots', url: 'http://localhost:3333/api/bots' },
+      { label: 'projects', url: 'http://localhost:3333/api/projects' },
+      { label: 'stats', url: 'http://localhost:3333/api/stats/usage' },
+      { label: 'config', url: 'http://localhost:3333/api/config' },
+      { label: 'commits', url: 'http://localhost:3333/api/commits/all' },
+    ],
   },
   {
     name: 'Vorum WA',
@@ -400,6 +414,19 @@ const LOCAL = [
       { label: 'attempts', url: 'http://localhost:3000/attempts' },
     ],
   },
+  {
+    name: 'Mensajero',
+    desc: 'Servicio centralizado de notificaciones WhatsApp para todos los proyectos.',
+    url: 'http://localhost:3005',
+    icon: '📨',
+    ping: 'http://localhost:3005',
+    badge: 'local',
+    ext: 'localhost:3005',
+    links: [
+      { label: 'health', url: 'http://localhost:3005/health' },
+      { label: 'templates', url: 'http://localhost:3005/templates' },
+    ],
+  },
 ]
 
 const CLOUD = [
@@ -409,6 +436,10 @@ const CLOUD = [
     url: 'https://vorum.puntoindigo.com',
     icon: '📋',
     badge: 'vercel',
+    links: [
+      { label: 'wa/status', url: 'https://vorum.puntoindigo.com/api/wa/status' },
+      { label: 'inbox', url: 'https://vorum.puntoindigo.com/api/inbox' },
+    ],
   },
   {
     name: 'Auris',
@@ -432,11 +463,27 @@ const CLOUD = [
     badge: 'vercel',
   },
   {
+    name: 'Plata · Pagos',
+    desc: 'Gateway de pagos centralizado. Integración dLocalGo.',
+    url: 'https://plata.puntoindigo.com',
+    icon: '💳',
+    badge: 'vercel',
+    links: [
+      { label: 'health', url: 'https://plata.puntoindigo.com/health' },
+      { label: 'integraciones', url: 'https://plata.puntoindigo.com/api/admin/integrations' },
+    ],
+  },
+  {
     name: 'Recibos',
     desc: 'Gestión de recibos de sueldo gremiales. Generación y archivo.',
     url: 'https://v0-recibos.vercel.app',
     icon: '🧾',
     badge: 'vercel',
+    links: [
+      { label: 'empleados', url: 'https://v0-recibos.vercel.app/api/empleados' },
+      { label: 'backup', url: 'https://v0-recibos.vercel.app/api/backup' },
+      { label: 'pendientes', url: 'https://v0-recibos.vercel.app/api/pending-items' },
+    ],
   },
   {
     name: 'Remitero',
@@ -444,6 +491,12 @@ const CLOUD = [
     url: 'https://remitero.vercel.app',
     icon: '📄',
     badge: 'wip',
+    links: [
+      { label: 'dashboard', url: 'https://remitero.vercel.app/api/dashboard' },
+      { label: 'auth/debug', url: 'https://remitero.vercel.app/api/auth/debug' },
+      { label: 'debug/env', url: 'https://remitero.vercel.app/api/debug/env' },
+      { label: 'logs', url: 'https://remitero.vercel.app/api/admin/logs' },
+    ],
   },
   {
     name: 'ID · Identidad',
