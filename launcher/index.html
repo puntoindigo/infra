@@ -235,6 +235,28 @@
   }
   .card:hover .card-arrow { transform: translate(2px, -2px); color: var(--accent); }
 
+  /* ── Sub-links ── */
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .card-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: color .1s, border-color .1s;
+    user-select: none;
+  }
+  .card-link:hover { color: var(--text); border-color: var(--muted2); }
+
   /* ── Badges ── */
   .badge {
     font-family: 'DM Mono', monospace;
@@ -370,6 +392,13 @@ const LOCAL = [
     icon: '💬',
     ping: 'http://localhost:3000',
     badge: 'local',
+    ext: 'localhost:3000',
+    links: [
+      { label: 'debug', url: 'http://localhost:3000/debug.html' },
+      { label: 'admin', url: 'http://localhost:3000/admin.html' },
+      { label: 'health', url: 'http://localhost:3000/health' },
+      { label: 'attempts', url: 'http://localhost:3000/attempts' },
+    ],
   },
 ]
 
@@ -463,6 +492,10 @@ function makeCard(svc, type) {
       <span class="card-url">${svc.ext || svc.url.replace('https://', '').replace('http://', '')}</span>
       <span class="card-arrow">↗</span>
     </div>
+    ${svc.links ? `
+    <div class="card-links" onclick="event.stopPropagation()">
+      ${svc.links.map(l => `<span class="card-link" onclick="window.open('${l.url}','_blank');event.stopPropagation()">${l.label}</span>`).join('')}
+    </div>` : ''}
   `
   return card
 }
